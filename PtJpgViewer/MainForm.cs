@@ -155,6 +155,8 @@ namespace PtGraViewer
                         LvParent.Items.Add(trimFileName(jpgFiles[i]), i);
                         break;
                 }
+                left_load_label.Text = "Now loading... [" + i.ToString() + "/" + jpgFiles.Length.ToString() + "]";
+                this.Update();
             }
 
             left_load_label.Visible = false;
@@ -287,6 +289,8 @@ namespace PtGraViewer
                         LvItems.Items.Add(trim2No(gFiles[i]), i);
                         break;
                 }
+                right_load_label.Text = "Now loading... [" + i.ToString() + "/" + gFiles.Length.ToString() + "]";
+                this.Update();
             }
 
             right_load_label.Visible = false;
