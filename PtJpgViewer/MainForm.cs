@@ -155,12 +155,12 @@ namespace PtGraViewer
                         LvParent.Items.Add(trimFileName(jpgFiles[i]), i);
                         break;
                 }
-                left_load_label.Text = "Now loading... [" + i.ToString() + "/" + jpgFiles.Length.ToString() + "]";
+                left_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + jpgFiles.Length.ToString() + "]";
                 this.Update();
             }
 
             left_load_label.Visible = false;
-            
+
             if (LvParent.Items.Count == 0)
             { MessageBox.Show(Properties.Resources.FileNotFound, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information); }
             else
@@ -289,7 +289,7 @@ namespace PtGraViewer
                         LvItems.Items.Add(trim2No(gFiles[i]), i);
                         break;
                 }
-                right_load_label.Text = "Now loading... [" + i.ToString() + "/" + gFiles.Length.ToString() + "]";
+                right_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + gFiles.Length.ToString() + "]";
                 this.Update();
             }
 
