@@ -16,13 +16,16 @@ namespace PtGraViewer
     public partial class MainForm : Form
     {
         private string ptID;
-        private string IdDateNoExt;//ID_日付_連番_.拡張子
+        private string IdDateNoExt;//ID_date_sequence number_.ext
 
         public MainForm()
         {
             InitializeComponent();
             Settings.readSettings();
             Settings.isJP = (Application.CurrentCulture.TwoLetterISOLanguageName == "ja");
+
+            left_load_label.Visible = false;
+            right_load_label.Visible = false;
 
             btOpenFolder.Visible = Settings.btOpenFolderVisible;
 
@@ -99,6 +102,9 @@ namespace PtGraViewer
                 return;
             }
 
+            left_load_label.Visible = true;
+            this.Update();
+
             string[] jpgFiles1 = Directory.GetFiles(ptImgDir, "*_???.???", SearchOption.TopDirectoryOnly);//*_???.*だと-001.*と一部だぶる。何故か良く分からない。
             string[] jpgFiles2 = Directory.GetFiles(ptImgDir, "*-001.???", SearchOption.AllDirectories);
             string[] jpgFiles = jpgFiles1.Concat(jpgFiles2).ToArray();
@@ -150,6 +156,9 @@ namespace PtGraViewer
                         break;
                 }
             }
+
+            left_load_label.Visible = false;
+            
             if (LvParent.Items.Count == 0)
             { MessageBox.Show(Properties.Resources.FileNotFound, "Information", MessageBoxButtons.OK, MessageBoxIcon.Information); }
             else
@@ -181,6 +190,9 @@ namespace PtGraViewer
         #region LvParent
         private void LvParentItemProcedure()
         {
+            right_load_label.Visible = true;
+            this.Update();
+
             LvItems.Items.Clear();
             ilItems.Images.Clear();
             IdDateNoExt = null;
@@ -276,6 +288,8 @@ namespace PtGraViewer
                         break;
                 }
             }
+
+            right_load_label.Visible = false;
 
             //If only one file selceted, open the file. If not, move focus to LvItems.
             if (gFiles.Length == 1)
@@ -383,7 +397,7 @@ namespace PtGraViewer
             return canvas;
         }
 
-        private void openFile(string gNumber)//PDFなら関連付けられたソフト起動。それ以外ならViewerに送る。
+        private void openFile(string gNumber)//PDF files will open with associated software. The others will send to viewer.
         {
             //Search file from ID folder and ID_Date_No folder
             string searchFileName = IdDateNoExt.Substring(0, IdDateNoExt.Length - 4) + gNumber.Substring(3) + IdDateNoExt.Substring(IdDateNoExt.Length - 4);

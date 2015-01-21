@@ -125,6 +125,37 @@
   <data name="splitContainer1.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 64</value>
   </data>
+  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="left_load_label.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="left_load_label.Font" type="System.Drawing.Font, System.Drawing">
+    <value>MS UI Gothic, 15.75pt</value>
+  </data>
+  <data name="left_load_label.Location" type="System.Drawing.Point, System.Drawing">
+    <value>132, 223</value>
+  </data>
+  <data name="left_load_label.Size" type="System.Drawing.Size, System.Drawing">
+    <value>126, 21</value>
+  </data>
+  <data name="left_load_label.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="left_load_label.Text" xml:space="preserve">
+    <value>Now loading...</value>
+  </data>
+  <data name="&gt;&gt;left_load_label.Name" xml:space="preserve">
+    <value>left_load_label</value>
+  </data>
+  <data name="&gt;&gt;left_load_label.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;left_load_label.Parent" xml:space="preserve">
+    <value>splitContainer1.Panel1</value>
+  </data>
+  <data name="&gt;&gt;left_load_label.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="LvParent.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
     <value>Top, Bottom, Left, Right</value>
   </data>
@@ -134,7 +165,6 @@
   <data name="LvParent.Size" type="System.Drawing.Size, System.Drawing">
     <value>381, 491</value>
   </data>
-  <assembly alias="mscorlib" name="mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   <data name="LvParent.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
@@ -148,7 +178,7 @@
     <value>splitContainer1.Panel1</value>
   </data>
   <data name="&gt;&gt;LvParent.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;splitContainer1.Panel1.Name" xml:space="preserve">
     <value>splitContainer1.Panel1</value>
@@ -160,6 +190,42 @@
     <value>splitContainer1</value>
   </data>
   <data name="&gt;&gt;splitContainer1.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="right_load_label.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Right</value>
+  </data>
+  <data name="right_load_label.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="right_load_label.Font" type="System.Drawing.Font, System.Drawing">
+    <value>MS UI Gothic, 15.75pt</value>
+  </data>
+  <data name="right_load_label.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="right_load_label.Location" type="System.Drawing.Point, System.Drawing">
+    <value>133, 223</value>
+  </data>
+  <data name="right_load_label.Size" type="System.Drawing.Size, System.Drawing">
+    <value>126, 21</value>
+  </data>
+  <data name="right_load_label.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="right_load_label.Text" xml:space="preserve">
+    <value>Now loading...</value>
+  </data>
+  <data name="&gt;&gt;right_load_label.Name" xml:space="preserve">
+    <value>right_load_label</value>
+  </data>
+  <data name="&gt;&gt;right_load_label.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Label, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;right_load_label.Parent" xml:space="preserve">
+    <value>splitContainer1.Panel2</value>
+  </data>
+  <data name="&gt;&gt;right_load_label.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="LvItems.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
@@ -184,7 +250,7 @@
     <value>splitContainer1.Panel2</value>
   </data>
   <data name="&gt;&gt;LvItems.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="&gt;&gt;splitContainer1.Panel2.Name" xml:space="preserve">
     <value>splitContainer1.Panel2</value>
@@ -217,7 +283,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;splitContainer1.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <metadata name="menuStrip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>17, 17</value>
@@ -259,7 +325,7 @@
     <value>$this</value>
   </data>
   <data name="&gt;&gt;menuStrip1.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>4</value>
   </data>
   <data name="tbPtID.Font" type="System.Drawing.Font, System.Drawing">
     <value>MS UI Gothic, 12pt</value>

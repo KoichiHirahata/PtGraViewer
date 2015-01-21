@@ -42,6 +42,8 @@
             this.ilParent = new System.Windows.Forms.ImageList(this.components);
             this.ilItems = new System.Windows.Forms.ImageList(this.components);
             this.btOpenFolder = new System.Windows.Forms.Button();
+            this.left_load_label = new System.Windows.Forms.Label();
+            this.right_load_label = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -56,10 +58,12 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.left_load_label);
             this.splitContainer1.Panel1.Controls.Add(this.LvParent);
             // 
             // splitContainer1.Panel2
             // 
+            this.splitContainer1.Panel2.Controls.Add(this.right_load_label);
             this.splitContainer1.Panel2.Controls.Add(this.LvItems);
             // 
             // LvParent
@@ -135,6 +139,18 @@
             this.btOpenFolder.UseVisualStyleBackColor = true;
             this.btOpenFolder.Click += new System.EventHandler(this.btOpenFolder_Click);
             // 
+            // left_load_label
+            // 
+            resources.ApplyResources(this.left_load_label, "left_load_label");
+            this.left_load_label.BackColor = System.Drawing.Color.LightBlue;
+            this.left_load_label.Name = "left_load_label";
+            // 
+            // right_load_label
+            // 
+            resources.ApplyResources(this.right_load_label, "right_load_label");
+            this.right_load_label.BackColor = System.Drawing.Color.LightBlue;
+            this.right_load_label.Name = "right_load_label";
+            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
@@ -143,13 +159,15 @@
             this.Controls.Add(this.BtView);
             this.Controls.Add(this.LbPtID);
             this.Controls.Add(this.tbPtID);
-            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
+            this.Controls.Add(this.splitContainer1);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);
+            this.splitContainer1.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
             this.splitContainer1.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
@@ -173,6 +191,8 @@
         private System.Windows.Forms.ImageList ilItems;
         private System.Windows.Forms.Button btOpenFolder;
         private System.Windows.Forms.ToolStripMenuItem helpToolStripMenuItem;
+        private System.Windows.Forms.Label left_load_label;
+        private System.Windows.Forms.Label right_load_label;
     }
 }
 
