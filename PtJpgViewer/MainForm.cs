@@ -157,6 +157,7 @@ namespace PtGraViewer
                 }
                 left_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + jpgFiles.Length.ToString() + "]";
                 this.Update();
+                Application.DoEvents();
             }
 
             left_load_label.Visible = false;
@@ -291,6 +292,7 @@ namespace PtGraViewer
                 }
                 right_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + gFiles.Length.ToString() + "]";
                 this.Update();
+                Application.DoEvents();
             }
 
             right_load_label.Visible = false;
