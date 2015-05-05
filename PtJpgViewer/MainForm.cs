@@ -17,8 +17,9 @@ namespace PtGraViewer
     {
         private string ptID;
         private string IdDateNoExt;//ID_date_sequence number_.ext
+        private string dateOfSearch = null; //Date string for search
 
-        public MainForm()
+        public MainForm(string[] args)
         {
             InitializeComponent();
             Settings.readSettings();
@@ -29,14 +30,33 @@ namespace PtGraViewer
 
             btOpenFolder.Visible = Settings.btOpenFolderVisible;
 
-            string[] args = System.Environment.GetCommandLineArgs();
-            if (args.Count() > 1)
+            #region analysys of argument
+            #region pt_id
+            string pt_id = String.Concat(from pt_args in args where pt_args.StartsWith("/pt:") select pt_args);
+
+            if (!String.IsNullOrWhiteSpace(pt_id))
             {
-                if (isWrongFolderName(args[1]))
-                { MessageBox.Show(Properties.Resources.WrongText, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                pt_id = pt_id.Substring(4);
+                if (isWrongFolderName(pt_id))
+                { MessageBox.Show("[/pt:]" + Properties.Resources.WrongText, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 else
-                { tbPtID.Text = args[1]; }
+                { tbPtID.Text = pt_id; }
             }
+            #endregion
+
+            #region exam_date
+            string exam_date = String.Concat(from date_args in args where date_args.StartsWith("/date:") select date_args);
+
+            if (!String.IsNullOrWhiteSpace(exam_date))
+            {
+                exam_date = exam_date.Substring(6);
+                if (isWrongDateStr(exam_date))
+                { MessageBox.Show("[/date:]" + Properties.Resources.WrongText, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                else
+                { dateOfSearch = exam_date; }
+            }
+            #endregion
+            #endregion
         }
 
         #region Menu
@@ -105,8 +125,20 @@ namespace PtGraViewer
             left_load_label.Visible = true;
             this.Update();
 
-            string[] jpgFiles1 = Directory.GetFiles(ptImgDir, "*_???.???", SearchOption.TopDirectoryOnly);//*_???.*だと-001.*と一部だぶる。何故か良く分からない。
-            string[] jpgFiles2 = Directory.GetFiles(ptImgDir, "*-001.???", SearchOption.AllDirectories);
+            string[] jpgFiles1;
+            string[] jpgFiles2;
+
+            if (String.IsNullOrWhiteSpace(dateOfSearch))
+            {
+                jpgFiles1 = Directory.GetFiles(ptImgDir, ptID + "_*_???.???", SearchOption.TopDirectoryOnly);//*_???.*だと-001.*と一部だぶる。何故か良く分からない。
+                jpgFiles2 = Directory.GetFiles(ptImgDir, ptID + "_*-001.???", SearchOption.AllDirectories);
+            }
+            else //Search with date of exam
+            {
+                jpgFiles1 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???.???", SearchOption.TopDirectoryOnly);
+                jpgFiles2 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???-001.???", SearchOption.AllDirectories);
+            }
+
             string[] jpgFiles = jpgFiles1.Concat(jpgFiles2).ToArray();
 
             int width = 48;
@@ -439,8 +471,11 @@ namespace PtGraViewer
             }
         }
 
-        private Boolean isWrongFolderName(string str)
+        public static Boolean isWrongFolderName(string str)
         {
+            if (String.IsNullOrWhiteSpace(str))
+            { return true; }
+
             string[] checkStr = { "/", @"\", ":", "*", "?", "\"", "<", ">", "|", "#", "{", "}", "%", "&", "~", ".." };
             for (int i = 0; i < checkStr.Count(); i++)
             {
@@ -458,6 +493,28 @@ namespace PtGraViewer
             { return true; }
 
             if (str.Substring(str.Length - 1, 1) == "　")
+            { return true; }
+
+            return false;
+        }
+
+        public static Boolean isWrongDateStr(string str)
+        {
+            if (String.IsNullOrWhiteSpace(str))
+            { return true; }
+
+            if (str.Length != 8)
+            { return true; }
+
+            if (str.Substring(0, 2) != "20" && str.Substring(0, 2) != "21")
+            { return true; }
+
+            int i = int.Parse(str.Substring(4, 2));
+            if (i < 1 || i > 12)
+            { return true; }
+
+            i = int.Parse(str.Substring(6, 2));
+            if (i < 1 || i > 31)
             { return true; }
 
             return false;
