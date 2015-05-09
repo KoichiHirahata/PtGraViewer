@@ -27,6 +27,7 @@ namespace PtGraViewer
 
             left_load_label.Visible = false;
             right_load_label.Visible = false;
+            btShowAll.Visible = false;
 
             btOpenFolder.Visible = Settings.btOpenFolderVisible;
 
@@ -137,6 +138,7 @@ namespace PtGraViewer
             {
                 jpgFiles1 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???.???", SearchOption.TopDirectoryOnly);
                 jpgFiles2 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???-001.???", SearchOption.AllDirectories);
+                btShowAll.Visible = true;
             }
 
             string[] jpgFiles = jpgFiles1.Concat(jpgFiles2).ToArray();
@@ -528,5 +530,12 @@ namespace PtGraViewer
 
         private void helpToolStripMenuItem_Click(object sender, EventArgs e)
         { System.Diagnostics.Process.Start("http://www.madeinclinic.jp/%E3%82%BD%E3%83%95%E3%83%88%E3%82%A6%E3%82%A7%E3%82%A2/pt_graphic/ptgraviewer/"); }
+
+        private void btShowAll_Click(object sender, EventArgs e)
+        {
+            dateOfSearch = "";
+            viewFiles();
+            btShowAll.Visible = false;
+        }
     }
 }
