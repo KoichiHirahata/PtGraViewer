@@ -45,6 +45,7 @@
             this.ilParent = new System.Windows.Forms.ImageList(this.components);
             this.ilItems = new System.Windows.Forms.ImageList(this.components);
             this.btOpenFolder = new System.Windows.Forms.Button();
+            this.lbPtName = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -59,14 +60,12 @@
             // 
             // splitContainer1.Panel1
             // 
-            resources.ApplyResources(this.splitContainer1.Panel1, "splitContainer1.Panel1");
             this.splitContainer1.Panel1.Controls.Add(this.btShowAll);
             this.splitContainer1.Panel1.Controls.Add(this.left_load_label);
             this.splitContainer1.Panel1.Controls.Add(this.LvParent);
             // 
             // splitContainer1.Panel2
             // 
-            resources.ApplyResources(this.splitContainer1.Panel2, "splitContainer1.Panel2");
             this.splitContainer1.Panel2.Controls.Add(this.right_load_label);
             this.splitContainer1.Panel2.Controls.Add(this.LvItems);
             // 
@@ -115,14 +114,14 @@
             // 
             // settingsToolStripMenuItem
             // 
-            resources.ApplyResources(this.settingsToolStripMenuItem, "settingsToolStripMenuItem");
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
+            resources.ApplyResources(this.settingsToolStripMenuItem, "settingsToolStripMenuItem");
             this.settingsToolStripMenuItem.Click += new System.EventHandler(this.settingsToolStripMenuItem_Click);
             // 
             // helpToolStripMenuItem
             // 
-            resources.ApplyResources(this.helpToolStripMenuItem, "helpToolStripMenuItem");
             this.helpToolStripMenuItem.Name = "helpToolStripMenuItem";
+            resources.ApplyResources(this.helpToolStripMenuItem, "helpToolStripMenuItem");
             this.helpToolStripMenuItem.Click += new System.EventHandler(this.helpToolStripMenuItem_Click);
             // 
             // tbPtID
@@ -130,6 +129,7 @@
             resources.ApplyResources(this.tbPtID, "tbPtID");
             this.tbPtID.Name = "tbPtID";
             this.tbPtID.KeyDown += new System.Windows.Forms.KeyEventHandler(this.tbPtID_KeyDown);
+            this.tbPtID.KeyUp += new System.Windows.Forms.KeyEventHandler(this.tbPtID_KeyUp);
             // 
             // LbPtID
             // 
@@ -162,10 +162,16 @@
             this.btOpenFolder.UseVisualStyleBackColor = true;
             this.btOpenFolder.Click += new System.EventHandler(this.btOpenFolder_Click);
             // 
+            // lbPtName
+            // 
+            resources.ApplyResources(this.lbPtName, "lbPtName");
+            this.lbPtName.Name = "lbPtName";
+            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.lbPtName);
             this.Controls.Add(this.btOpenFolder);
             this.Controls.Add(this.BtView);
             this.Controls.Add(this.LbPtID);
@@ -205,6 +211,7 @@
         private System.Windows.Forms.Label left_load_label;
         private System.Windows.Forms.Label right_load_label;
         private System.Windows.Forms.Button btShowAll;
+        private System.Windows.Forms.Label lbPtName;
     }
 }
 

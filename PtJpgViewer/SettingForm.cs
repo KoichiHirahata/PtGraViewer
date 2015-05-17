@@ -10,7 +10,11 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Xml;
+using System.Xml.Serialization;
 using System.Net;
+using System.Security.Cryptography;
+using Npgsql;
 
 namespace PtGraViewer
 {
@@ -20,15 +24,14 @@ namespace PtGraViewer
         {
             InitializeComponent();
 
-            if (System.IO.File.Exists(Application.StartupPath+"\\settings.ini"))
+            if (System.IO.File.Exists(Settings.settingFile_location))
             {
-                Settings.readSettings();
-                if (Settings.imgDir.Length == 0)
+                if (String.IsNullOrWhiteSpace(Settings.imgDir))
                 { this.tbSaveDir.Text = "(" + Properties.Resources.NotConfigured + ")"; }
                 else
                 {
                     this.tbSaveDir.Text = Settings.imgDir;
-                    cbBtOpenFolderVisible.Checked = Settings.btOpenFolderVisible;
+                    cbBtOpenFolderVisible.Checked = Settings.openFolderButtonVisible;
                 }
             }
             else
@@ -37,6 +40,7 @@ namespace PtGraViewer
             this.ActiveControl = this.btSave;
         }
 
+        #region Buttons
         private void kettei_Bt_Click(object sender, EventArgs e)
         {
             if ((this.tbSaveDir.Text == "(" + Properties.Resources.NotConfigured + ")") || (this.tbSaveDir.Text == "(" + Properties.Resources.InitialSetting + ")"))
@@ -90,7 +94,7 @@ namespace PtGraViewer
             #endregion
 
             Settings.imgDir = tbSaveDir.Text;
-            Settings.btOpenFolderVisible = cbBtOpenFolderVisible.Checked;
+            Settings.openFolderButtonVisible = cbBtOpenFolderVisible.Checked;
             Settings.saveSettings();
             this.Close();
         }
@@ -99,150 +103,252 @@ namespace PtGraViewer
         {
             this.Close();
         }
+        #endregion
     }
 
-    #region File_control
+    #region Settings
     //PDFデータの保存先などを記録するsetting.config用のクラス
     public class Settings
     {
         public static string imgDir { get; set; }
-        public static Boolean btOpenFolderVisible { get; set; }
-        public static Boolean isJP { get; set; } //Property for storing that machine's language is Japanese or not.
+        public static Boolean openFolderButtonVisible { get; set; }
+        public static Boolean useDB { get; set; }
+        public static string DBSrvIP { get; set; } //IP address of DB server
+        public static string DBSrvPort { get; set; } //Port number of DB server
+        public static string DBconnectID { get; set; } //ID of DB user
+        public static string DBconnectPw { get; set; } //Pw of DB user
+        public static string settingFile_location { get; set; } //Config file path
+        public static string lang { get; set; } //language
+        public static string sslSetting { get; set; } //SSL setting string
+        public static string ptInfoPlugin { get; set; } //File location of the plug-in to get patient information
 
-        //ファイルから読み込む
-        public static void readSettings()
+        public static void initiateSettings()
         {
-            if (System.IO.File.Exists(Application.StartupPath + "\\settings.ini"))
-            {
-                string text = "";
-                #region Read from file
-                try
-                {
-                    using (StreamReader sr = new StreamReader(Application.StartupPath + "\\settings.ini"))
-                    { text = sr.ReadToEnd(); }
-                }
-                catch (Exception e)
-                { MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-                #endregion
+            settingFile_location = Application.StartupPath + "\\settings.config";
+            readSettings();
+            lang = Application.CurrentCulture.TwoLetterISOLanguageName;
+            //Settings.sslSetting = ""; //Use this when you want to connect without using SSL
+            sslSetting = "SSL=true;SslMode=Require;"; //Use this when you want to connect using SSL
+            ptInfoPlugin = checkPtInfoPlugin();
 
-                int index;
-                #region Read imgDir
-                index = text.IndexOf("Image Directory:");
-                if (index == -1)
-                {
-                    MessageBox.Show("[settings.ini]" + Properties.Resources.UnsupportedFileType, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                else
-                { Settings.imgDir = getUntilNewLine(text, index + 16); }
-                #endregion
-
-                #region Read btOpenFolderVisible
-                index = text.IndexOf("Open folder button visible:");
-                if (index == -1)
-                {
-                    MessageBox.Show("[settings.ini]" + Properties.Resources.UnsupportedFileType, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                else
-                {
-                    string temp_str = getUntilNewLine(text, index + 27);
-                    try { Settings.btOpenFolderVisible = bool.Parse(temp_str); }
-                    catch (ArgumentNullException)
-                    { Settings.btOpenFolderVisible = false; }
-                    catch (FormatException)
-                    { Settings.btOpenFolderVisible = false; }
-                }
-                #endregion
-            }
-            else
+            if (Settings.useDB)
             {
-                Settings.imgDir = "";
-                Settings.btOpenFolderVisible = false;
+                if (!testConnect())
+                {
+                    MessageBox.Show(Properties.Resources.CouldntOpenConn, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Settings.useDB = false;
+                }
             }
         }
 
-        //ファイルに書き込む
         public static void saveSettings()
         {
-            string text = "";
-            if (System.IO.File.Exists(Application.StartupPath + "\\settings.ini"))
+            Settings4file st = new Settings4file();
+            st.imgDir = Settings.imgDir;
+            st.openFolderButtonVisible = Settings.openFolderButtonVisible;
+            st.useDB = Settings.useDB;
+            if (Settings.useDB)
             {
-                #region Read from file
-                try
-                {
-                    using (StreamReader sr = new StreamReader(Application.StartupPath + "\\settings.ini"))
-                    { text = sr.ReadToEnd(); }
-                }
-                catch (Exception e)
-                { MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-                #endregion
-
-                int index;
-                #region write imgDir to text
-                index = text.IndexOf("Image Directory:");
-                if (index == -1)
-                {
-                    MessageBox.Show("[settings.ini]" + Properties.Resources.UnsupportedFileType, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                else
-                {
-                    int temp_text_length = text.Length;
-                    for (int i = 16; (index + i) <= temp_text_length; i++)
-                    {
-                        if ((index + i) == temp_text_length)
-                        {
-                            text = (text.Substring(0, index + 16) + Settings.imgDir);
-                            break;
-                        }
-                        else if (text.Substring(index + 16, 1) != "\r")
-                        { text = (text.Substring(0, index + 16) + text.Substring(index + 17)); }
-                        else
-                        {
-                            text = (text.Substring(0, index + 16) + Settings.imgDir + text.Substring(index + 16));
-                            break;
-                        }
-                    }
-                }
-                #endregion
-
-                #region write btOpenFolderVisible to text
-                index = text.IndexOf("Open folder button visible:");
-                if (index == -1)
-                {
-                    MessageBox.Show("[settings.ini]" + Properties.Resources.UnsupportedFileType, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-                else
-                {
-                    int temp_text_length = text.Length;
-                    for (int i = 27; (index + i) <= temp_text_length; i++)
-                    {
-                        if ((index + i) == temp_text_length)
-                        {
-                            text = (text.Substring(0, index + 27) + Settings.btOpenFolderVisible.ToString());
-                            break;
-                        }
-                        else if (text.Substring(index + 27, 1) != "\r")
-                        { text = (text.Substring(0, index + 27) + text.Substring(index + 28)); }
-                        else
-                        {
-                            text = (text.Substring(0, index + 27) + Settings.btOpenFolderVisible.ToString() + text.Substring(index + 27));
-                            break;
-                        }
-                    }
-                }
-                #endregion
+                st.DBSrvIP = Settings.DBSrvIP;
+                st.DBSrvPort = Settings.DBSrvPort;
+                st.DBconnectID = Settings.DBconnectID;
+                st.DBconnectPw = PasswordEncoder.Encrypt(Settings.DBconnectPw);
             }
             else
-            { text = "Image Directory:" + Settings.imgDir + "\r\n" + "Open folder button visible:" + Settings.btOpenFolderVisible.ToString(); }
+            {
+                st.DBSrvIP = "";
+                st.DBSrvPort = "";
+                st.DBconnectID = "";
+                st.DBconnectPw = "";
+            }
 
-            #region Save to settings.ini
-            StreamWriter sw = new StreamWriter(Application.StartupPath + @"\settings.ini", false);
-            sw.Write(text);
-            sw.Close();
+            XmlSerializer xserializer = new XmlSerializer(typeof(Settings4file));
+            //Open file
+            System.IO.FileStream fs1 =
+                new System.IO.FileStream(Settings.settingFile_location, System.IO.FileMode.Create);
+            xserializer.Serialize(fs1, st);
+            fs1.Close();
+        }
+
+        //Read from file
+        public static void readSettings()
+        {
+            if (System.IO.File.Exists(Settings.settingFile_location))
+            {
+                Settings4file st = new Settings4file();
+
+                XmlSerializer xserializer = new XmlSerializer(typeof(Settings4file));
+                System.IO.FileStream fs2 =
+                    new System.IO.FileStream(Settings.settingFile_location, System.IO.FileMode.Open);
+                try
+                {
+                    st = (Settings4file)xserializer.Deserialize(fs2);
+                    fs2.Close();
+                }
+                catch (InvalidOperationException)
+                {
+                    DialogResult ret;
+                    ret = MessageBox.Show(Properties.Resources.SettingFileBroken, "Error", MessageBoxButtons.YesNo, MessageBoxIcon.Error);
+                    fs2.Close();
+                    if (ret == DialogResult.Yes)
+                    { file_control.delFile(Settings.settingFile_location); }
+                }
+
+                Settings.imgDir = st.imgDir;
+                Settings.openFolderButtonVisible = st.openFolderButtonVisible;
+                Settings.useDB = st.useDB;
+                Settings.DBSrvIP = st.DBSrvIP;
+                Settings.DBSrvPort = st.DBSrvPort;
+                Settings.DBconnectID = st.DBconnectID;
+                Settings.DBconnectPw = PasswordEncoder.Decrypt(st.DBconnectPw);
+            }
+        }
+
+        public static string checkPtInfoPlugin()
+        {
+            if (File.Exists(Application.StartupPath + "\\plugins.ini"))
+            {
+                string text = file_control.readFromFile(Application.StartupPath + "\\plugins.ini");
+                string plugin_location = file_control.readItemSettingFromText(text, "Patient information=");
+                if (File.Exists(plugin_location))
+                { return plugin_location; }
+                else
+                { return ""; }
+            }
+            else
+            { return ""; }
+        }
+
+        public static string getUntilNewLine(string text, int strPoint)
+        {
+            string ret = "";
+            for (int i = strPoint; i < text.Length; i++)
+            {
+                if ((text[i].ToString() != "\r") && (text[i].ToString() != "\n"))
+                { ret += text[i].ToString(); }
+                else
+                { break; }
+            }
+
+            for (int i = 0; i < ret.Length; i++)
+            {
+                if (ret.Substring(0, 1) == "\t" || ret.Substring(0, 1) == " " || ret.Substring(0, 1) == "　")
+                { ret = ret.Substring(1); }
+                else
+                { break; }
+            }
+
+            for (int i = 0; i < ret.Length; i++)
+            {
+                if (ret.Substring(ret.Length - 1) == "\t" || ret.Substring(ret.Length - 1) == " " || ret.Substring(ret.Length - 1) == "　")
+                { ret = ret.Substring(0, ret.Length - 1); }
+                else
+                { break; }
+            }
+
+            return ret;
+        }
+
+        public static Boolean testConnect()
+        {
+            #region Npgsql
+            NpgsqlConnection conn;
+            try
+            {
+                conn = new NpgsqlConnection("Server=" + Settings.DBSrvIP + ";Port=" + Settings.DBSrvPort + ";User Id=" +
+                    Settings.DBconnectID + ";Password=" + Settings.DBconnectPw + ";Database=endoDB;" + Settings.sslSetting);
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show(Properties.Resources.WrongConnectingString, "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
             #endregion
+
+            try
+            { conn.Open(); }
+            catch (NpgsqlException)
+            {
+                MessageBox.Show(Properties.Resources.CouldntOpenConn, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Close();
+                return false;
+            }
+            catch (System.IO.IOException)
+            {
+                MessageBox.Show(Properties.Resources.ConnClosed, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Close();
+                return false;
+            }
+
+            if (conn.State == ConnectionState.Open)
+            {
+                conn.Close();
+                return true;
+            }
+            else
+            {
+                MessageBox.Show(Properties.Resources.CouldntOpenConn, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Close();
+                return false;
+            }
+        }
+    }
+
+    [Serializable()]
+    public class Settings4file
+    {
+        public string imgDir { get; set; }
+        public Boolean openFolderButtonVisible { get; set; } //Property for PtGraViewer
+        public Boolean useDB { get; set; }
+        public string DBSrvIP { get; set; } //IP address of DB server
+        public string DBSrvPort { get; set; } //Port number of DB server
+        public string DBconnectID { get; set; } //ID of DB user
+        public string DBconnectPw { get; set; } //Pw of DB user
+    }
+    #endregion
+
+    #region file_control
+    public class file_control
+    {
+        public static void delFile(string fileName)
+        {
+            if (System.IO.File.Exists(fileName) == true)
+            {
+                try
+                { System.IO.File.Delete(fileName); }
+                catch (System.IO.IOException)
+                { MessageBox.Show(Properties.Resources.FileBeingUsed, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                catch (System.UnauthorizedAccessException)
+                { MessageBox.Show(Properties.Resources.PermissionDenied, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            }
+            else
+            { MessageBox.Show(Properties.Resources.FileNotFound, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        public static string readFromFile(string fileName)
+        {
+            string text = "";
+            try
+            {
+                using (StreamReader sr = new StreamReader(fileName))
+                { text = sr.ReadToEnd(); }
+            }
+            catch (Exception e)
+            { MessageBox.Show(e.ToString(), "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            return text;
+        }
+
+        public static string readItemSettingFromText(string text, string itemName)
+        {
+            int index;
+            index = text.IndexOf(itemName);
+            if (index == -1)
+            {
+                MessageBox.Show("[settings.config]" + Properties.Resources.UnsupportedFileType, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return "";
+            }
+            else
+            { return getUntilNewLine(text, index + itemName.Length); }
         }
 
         public static string getUntilNewLine(string text, int strPoint)
@@ -275,22 +381,57 @@ namespace PtGraViewer
             return ret;
         }
     }
+    #endregion
 
-    public class file_control
+    #region password
+    public class PasswordEncoder
     {
-        public static void delFile(string fileName)
+        private PasswordEncoder() { }
+
+        private const string AesIV = @"&%jqiIurtmslLE58";
+        private const string AesKey = @"3uJi<9!$kM0lkxme";
+
+        public static string Encrypt(string text)
         {
-            if (System.IO.File.Exists(fileName) == true)
+            if (String.IsNullOrWhiteSpace(text))
+            { return ""; }
+
+            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+            aes.BlockSize = 128;
+            aes.KeySize = 128;
+            aes.IV = Encoding.UTF8.GetBytes(AesIV);
+            aes.Key = Encoding.UTF8.GetBytes(AesKey);
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
+
+            byte[] src = Encoding.Unicode.GetBytes(text);
+
+            using (ICryptoTransform encrypt = aes.CreateEncryptor())
             {
-                try
-                { System.IO.File.Delete(fileName); }
-                catch (System.IO.IOException)
-                { MessageBox.Show(Properties.Resources.FileBeingUsed, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
-                catch (System.UnauthorizedAccessException)
-                { MessageBox.Show(Properties.Resources.PermissionDenied, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+                byte[] dest = encrypt.TransformFinalBlock(src, 0, src.Length);
+                return Convert.ToBase64String(dest);
             }
-            else
-            { MessageBox.Show(Properties.Resources.FileNotFound, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+        }
+
+        public static string Decrypt(string text)
+        {
+            if (String.IsNullOrWhiteSpace(text))
+            { return ""; }
+
+            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+            aes.BlockSize = 128;
+            aes.KeySize = 128;
+            aes.IV = Encoding.UTF8.GetBytes(AesIV);
+            aes.Key = Encoding.UTF8.GetBytes(AesKey);
+            aes.Mode = CipherMode.CBC;
+            aes.Padding = PaddingMode.PKCS7;
+
+            byte[] src = System.Convert.FromBase64String(text);
+            using (ICryptoTransform decrypt = aes.CreateDecryptor())
+            {
+                byte[] dest = decrypt.TransformFinalBlock(src, 0, src.Length);
+                return Encoding.Unicode.GetString(dest);
+            }
         }
     }
     #endregion

@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PtJpgViewer", "PtJpgViewer\PtJpgViewer.csproj", "{DCE0CF02-B661-4D4D-87FF-DFFCE15A532F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PtGraViewer", "PtJpgViewer\PtGraViewer.csproj", "{DCE0CF02-B661-4D4D-87FF-DFFCE15A532F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PtJpgViewerTests", "PtJpgViewerTests\PtJpgViewerTests.csproj", "{2FDCC07F-989C-494F-AEA7-AEECD7C3810E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PtGraViewerTests", "PtGraViewerTests\PtGraViewerTests.csproj", "{2FDCC07F-989C-494F-AEA7-AEECD7C3810E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using Npgsql;
 
 namespace PtGraViewer
 {
@@ -22,14 +23,14 @@ namespace PtGraViewer
         public MainForm(string[] args)
         {
             InitializeComponent();
-            Settings.readSettings();
-            Settings.isJP = (Application.CurrentCulture.TwoLetterISOLanguageName == "ja");
+            lbPtName.Text = "";
+            Settings.initiateSettings();
 
             left_load_label.Visible = false;
             right_load_label.Visible = false;
             btShowAll.Visible = false;
 
-            btOpenFolder.Visible = Settings.btOpenFolderVisible;
+            btOpenFolder.Visible = Settings.openFolderButtonVisible;
 
             #region analysys of argument
             #region pt_id
@@ -65,7 +66,7 @@ namespace PtGraViewer
         {
             SettingForm sf = new SettingForm();
             sf.ShowDialog(this);
-            btOpenFolder.Visible = Settings.btOpenFolderVisible;
+            btOpenFolder.Visible = Settings.openFolderButtonVisible;
         }
         #endregion
 
@@ -206,6 +207,64 @@ namespace PtGraViewer
         }
         #endregion
 
+        #region ReadPatientData
+        private void tbPtID_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (Settings.useDB)
+            { readPtData(tbPtID.Text); }
+        }
+
+        public void readPtData(string patientID)
+        {
+            #region Npgsql
+            NpgsqlConnection conn;
+            try
+            {
+                conn = new NpgsqlConnection("Server=" + Settings.DBSrvIP + ";Port=" + Settings.DBSrvPort + ";User Id=" +
+                    Settings.DBconnectID + ";Password=" + Settings.DBconnectPw + ";Database=endoDB;" + Settings.sslSetting);
+            }
+            catch (ArgumentException)
+            {
+                MessageBox.Show(Properties.Resources.WrongConnectingString, "Connection Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            { conn.Open(); }
+            catch (NpgsqlException)
+            {
+                MessageBox.Show(Properties.Resources.CouldntOpenConn, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Close();
+                return;
+            }
+            catch (System.IO.IOException)
+            {
+                MessageBox.Show(Properties.Resources.ConnClosed, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                conn.Close();
+                return;
+            }
+            #endregion
+
+            string sql = "SELECT * FROM patient WHERE pt_id='" + patientID + "'";
+
+            NpgsqlDataAdapter da = new NpgsqlDataAdapter(sql, conn);
+            DataTable dt = new DataTable();
+            da.Fill(dt);
+            if (dt.Rows.Count == 0)
+            {
+                conn.Close();
+                lbPtName.Text = "No data";
+                return;
+            }
+            else
+            {
+                DataRow row = dt.Rows[0];
+                lbPtName.Text = row["pt_name"].ToString();
+                conn.Close();
+            }
+        }
+        #endregion
+
         #region btOpenFolder
         private void btOpenFolder_Click(object sender, EventArgs e)
         {
@@ -247,7 +306,7 @@ namespace PtGraViewer
 
             //textから元のファイルを探す手がかりをゲット。
             string searchText = ptID + "_";
-            if (Settings.isJP)
+            if (Settings.lang == "ja")
             { searchText += selectedText.Substring(0, 4) + selectedText.Substring(5, 2) + selectedText.Substring(8, 2) + "_" + selectedText.Substring(11, 3); }
             else
             { searchText += selectedText.Substring(0, 4) + selectedText.Substring(5, 2) + selectedText.Substring(8); }
@@ -382,7 +441,7 @@ namespace PtGraViewer
             if (ret.Substring(ret.Length - 4) == "-001")
             { ret = ret.Substring(0, ret.Length - 4); }
 
-            if (Settings.isJP)
+            if (Settings.lang == "ja")
             {
                 //通し番号前の_を削除
                 ret = ret.Substring(0, ret.Length - 4) + ret.Substring(ret.Length - 3);

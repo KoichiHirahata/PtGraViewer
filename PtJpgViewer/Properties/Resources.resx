@@ -123,6 +123,12 @@
   <data name="CantPrintAnyMore" xml:space="preserve">
     <value>Can't print any more.</value>
   </data>
+  <data name="ConnClosed" xml:space="preserve">
+    <value>Connection closed by server.</value>
+  </data>
+  <data name="CouldntOpenConn" xml:space="preserve">
+    <value>Could not establish connection.</value>
+  </data>
   <data name="FileBeingUsed" xml:space="preserve">
     <value>The file is being used.</value>
   </data>
@@ -161,6 +167,9 @@
   </data>
   <data name="UpperLimitIs8" xml:space="preserve">
     <value>You can check until 8 pieces.</value>
+  </data>
+  <data name="WrongConnectingString" xml:space="preserve">
+    <value>Connection string is wrong.</value>
   </data>
   <data name="WrongText" xml:space="preserve">
     <value>Wrong text.</value>

@@ -55,9 +55,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\PtJpgViewer\PtJpgViewer.csproj">
+    <ProjectReference Include="..\PtJpgViewer\PtGraViewer.csproj">
       <Project>{DCE0CF02-B661-4D4D-87FF-DFFCE15A532F}</Project>
-      <Name>PtJpgViewer</Name>
+      <Name>PtGraViewer</Name>
     </ProjectReference>
   </ItemGroup>
   <Choose>
