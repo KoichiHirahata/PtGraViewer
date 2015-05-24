@@ -113,6 +113,7 @@
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip1);
             this.Name = "JpegViewer";
+            this.ShowInTaskbar = false;
             this.Shown += new System.EventHandler(this.JpegViewer_Shown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
