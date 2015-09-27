@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Drawing.Imaging;
+using System.Diagnostics;
 using Npgsql;
 
 namespace PtGraViewer
@@ -211,10 +212,12 @@ namespace PtGraViewer
         private void tbPtID_KeyUp(object sender, KeyEventArgs e)
         {
             if (Settings.useDB)
-            { readPtData(tbPtID.Text); }
+            { readPtDataUsingFe(tbPtID.Text); }
+            if (Settings.usePlugin && !String.IsNullOrWhiteSpace(Settings.ptInfoPlugin))
+            { readPtDataUsingPlugin(tbPtID.Text); }
         }
 
-        public void readPtData(string patientID)
+        public void readPtDataUsingFe(string patientID)
         {
             #region Npgsql
             NpgsqlConnection conn;
@@ -262,6 +265,30 @@ namespace PtGraViewer
                 lbPtName.Text = row["pt_name"].ToString();
                 conn.Close();
             }
+        }
+
+        public void readPtDataUsingPlugin(string patienID)
+        {
+            string command = Settings.ptInfoPlugin;
+
+            ProcessStartInfo psInfo = new ProcessStartInfo();
+
+            psInfo.FileName = command;
+            psInfo.Arguments = patienID;
+            psInfo.CreateNoWindow = true; // Do not open console window
+            psInfo.UseShellExecute = false; // Do not use shell
+
+            psInfo.RedirectStandardOutput = true;
+
+            Process p = Process.Start(psInfo);
+            string output = p.StandardOutput.ReadToEnd();
+
+            output = output.Replace("\r\r\n", "\n"); // Replace new line code
+
+            if (String.IsNullOrWhiteSpace(output))
+            { lbPtName.Text = "No data"; }
+            else
+            { lbPtName.Text = file_control.readItemSettingFromText(output, "Patient Name:"); }
         }
         #endregion
 

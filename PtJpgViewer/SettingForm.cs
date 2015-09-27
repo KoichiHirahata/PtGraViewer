@@ -111,7 +111,7 @@ namespace PtGraViewer
     public class Settings
     {
         public static string imgDir { get; set; }
-        public static Boolean openFolderButtonVisible { get; set; }
+        public static bool openFolderButtonVisible { get; set; }
         public static Boolean useDB { get; set; }
         public static string DBSrvIP { get; set; } //IP address of DB server
         public static string DBSrvPort { get; set; } //Port number of DB server
@@ -120,6 +120,7 @@ namespace PtGraViewer
         public static string settingFile_location { get; set; } //Config file path
         public static string lang { get; set; } //language
         public static string sslSetting { get; set; } //SSL setting string
+        public static bool usePlugin { get; set; }
         public static string ptInfoPlugin { get; set; } //File location of the plug-in to get patient information
 
         public static void initiateSettings()
