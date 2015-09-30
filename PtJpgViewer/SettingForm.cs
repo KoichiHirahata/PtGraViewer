@@ -112,7 +112,7 @@ namespace PtGraViewer
     {
         public static string imgDir { get; set; }
         public static bool openFolderButtonVisible { get; set; }
-        public static Boolean useDB { get; set; }
+        public static Boolean useFeDB { get; set; }
         public static string DBSrvIP { get; set; } //IP address of DB server
         public static string DBSrvPort { get; set; } //Port number of DB server
         public static string DBconnectID { get; set; } //ID of DB user
@@ -132,12 +132,12 @@ namespace PtGraViewer
             sslSetting = "SSL=true;SslMode=Require;"; //Use this when you want to connect using SSL
             ptInfoPlugin = checkPtInfoPlugin();
 
-            if (Settings.useDB)
+            if (Settings.useFeDB)
             {
                 if (!testConnect())
                 {
                     MessageBox.Show(Properties.Resources.CouldntOpenConn, "Connection error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    Settings.useDB = false;
+                    Settings.useFeDB = false;
                 }
             }
         }
@@ -147,8 +147,8 @@ namespace PtGraViewer
             Settings4file st = new Settings4file();
             st.imgDir = Settings.imgDir;
             st.openFolderButtonVisible = Settings.openFolderButtonVisible;
-            st.useDB = Settings.useDB;
-            if (Settings.useDB)
+            st.useDB = Settings.useFeDB;
+            if (Settings.useFeDB)
             {
                 st.DBSrvIP = Settings.DBSrvIP;
                 st.DBSrvPort = Settings.DBSrvPort;
@@ -197,7 +197,7 @@ namespace PtGraViewer
 
                 Settings.imgDir = st.imgDir;
                 Settings.openFolderButtonVisible = st.openFolderButtonVisible;
-                Settings.useDB = st.useDB;
+                Settings.useFeDB = st.useDB;
                 Settings.DBSrvIP = st.DBSrvIP;
                 Settings.DBSrvPort = st.DBSrvPort;
                 Settings.DBconnectID = st.DBconnectID;

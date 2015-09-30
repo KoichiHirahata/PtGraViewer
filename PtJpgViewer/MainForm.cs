@@ -211,7 +211,7 @@ namespace PtGraViewer
         #region ReadPatientData
         private void tbPtID_KeyUp(object sender, KeyEventArgs e)
         {
-            if (Settings.useDB)
+            if (Settings.useFeDB)
             { readPtDataUsingFe(tbPtID.Text); }
             if (Settings.usePlugin && !String.IsNullOrWhiteSpace(Settings.ptInfoPlugin))
             { readPtDataUsingPlugin(tbPtID.Text); }
