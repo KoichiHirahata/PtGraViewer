@@ -27,6 +27,7 @@ namespace PtGraViewer
             lbPtName.Text = "";
             Settings.initiateSettings();
 
+            lbNoData.Visible = false;
             left_load_label.Visible = false;
             right_load_label.Visible = false;
             btShowAll.Visible = false;
@@ -109,6 +110,7 @@ namespace PtGraViewer
             }
             #endregion
 
+            lbNoData.Visible = false;
             ptID = tbPtID.Text;
             IdDateNoExt = null;
 
@@ -121,7 +123,8 @@ namespace PtGraViewer
             string ptImgDir = Settings.imgDir + @"\" + ptID;
             if (!Directory.Exists(ptImgDir))
             {
-                MessageBox.Show(Properties.Resources.FolderNotExist, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lbNoData.Visible = true;
+                //MessageBox.Show(Properties.Resources.FolderNotExist, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -213,7 +216,7 @@ namespace PtGraViewer
         {
             if (Settings.useFeDB)
             { readPtDataUsingFe(tbPtID.Text); }
-            if (Settings.usePlugin && !String.IsNullOrWhiteSpace(Settings.ptInfoPlugin))
+            if (Settings.usePlugin && !String.IsNullOrWhiteSpace(tbPtID.Text))
             { readPtDataUsingPlugin(tbPtID.Text); }
         }
 

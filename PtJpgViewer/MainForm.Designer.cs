@@ -46,6 +46,7 @@
             this.ilItems = new System.Windows.Forms.ImageList(this.components);
             this.btOpenFolder = new System.Windows.Forms.Button();
             this.lbPtName = new System.Windows.Forms.Label();
+            this.lbNoData = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -60,6 +61,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.Controls.Add(this.lbNoData);
             this.splitContainer1.Panel1.Controls.Add(this.btShowAll);
             this.splitContainer1.Panel1.Controls.Add(this.left_load_label);
             this.splitContainer1.Panel1.Controls.Add(this.LvParent);
@@ -167,6 +169,12 @@
             resources.ApplyResources(this.lbPtName, "lbPtName");
             this.lbPtName.Name = "lbPtName";
             // 
+            // lbNoData
+            // 
+            resources.ApplyResources(this.lbNoData, "lbNoData");
+            this.lbNoData.BackColor = System.Drawing.Color.LightBlue;
+            this.lbNoData.Name = "lbNoData";
+            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
@@ -212,6 +220,7 @@
         private System.Windows.Forms.Label right_load_label;
         private System.Windows.Forms.Button btShowAll;
         private System.Windows.Forms.Label lbPtName;
+        private System.Windows.Forms.Label lbNoData;
     }
 }
 

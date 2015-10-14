@@ -198,6 +198,7 @@ namespace PtGraViewer
                 Settings.imgDir = st.imgDir;
                 Settings.openFolderButtonVisible = st.openFolderButtonVisible;
                 Settings.useFeDB = st.useDB;
+                Settings.usePlugin = st.usePlugin;
                 Settings.DBSrvIP = st.DBSrvIP;
                 Settings.DBSrvPort = st.DBSrvPort;
                 Settings.DBconnectID = st.DBconnectID;
@@ -300,7 +301,8 @@ namespace PtGraViewer
     {
         public string imgDir { get; set; }
         public Boolean openFolderButtonVisible { get; set; } //Property for PtGraViewer
-        public Boolean useDB { get; set; }
+        public bool useDB { get; set; }
+        public bool usePlugin { get; set; }
         public string DBSrvIP { get; set; } //IP address of DB server
         public string DBSrvPort { get; set; } //Port number of DB server
         public string DBconnectID { get; set; } //ID of DB user
