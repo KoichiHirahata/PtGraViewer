@@ -31,6 +31,7 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.lbNoData = new System.Windows.Forms.Label();
             this.btShowAll = new System.Windows.Forms.Button();
             this.left_load_label = new System.Windows.Forms.Label();
             this.LvParent = new System.Windows.Forms.ListView();
@@ -46,7 +47,6 @@
             this.ilItems = new System.Windows.Forms.ImageList(this.components);
             this.btOpenFolder = new System.Windows.Forms.Button();
             this.lbPtName = new System.Windows.Forms.Label();
-            this.lbNoData = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -70,6 +70,12 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.right_load_label);
             this.splitContainer1.Panel2.Controls.Add(this.LvItems);
+            // 
+            // lbNoData
+            // 
+            resources.ApplyResources(this.lbNoData, "lbNoData");
+            this.lbNoData.BackColor = System.Drawing.Color.LightBlue;
+            this.lbNoData.Name = "lbNoData";
             // 
             // btShowAll
             // 
@@ -169,12 +175,6 @@
             resources.ApplyResources(this.lbPtName, "lbPtName");
             this.lbPtName.Name = "lbPtName";
             // 
-            // lbNoData
-            // 
-            resources.ApplyResources(this.lbNoData, "lbNoData");
-            this.lbNoData.BackColor = System.Drawing.Color.LightBlue;
-            this.lbNoData.Name = "lbNoData";
-            // 
             // MainForm
             // 
             resources.ApplyResources(this, "$this");
@@ -186,9 +186,11 @@
             this.Controls.Add(this.tbPtID);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.splitContainer1);
+            this.KeyPreview = true;
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "MainForm";
             this.Shown += new System.EventHandler(this.MainForm_Shown);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel1.PerformLayout();
             this.splitContainer1.Panel2.ResumeLayout(false);

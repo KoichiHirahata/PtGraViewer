@@ -626,5 +626,14 @@ namespace PtGraViewer
             viewFiles();
             btShowAll.Visible = false;
         }
+
+        private void clearTbPtId()
+        { tbPtID.Text = ""; }
+
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Escape)
+            { clearTbPtId(); }
+        }
     }
 }
