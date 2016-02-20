@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
-using System.Runtime.InteropServices;
-using System.Drawing.Imaging;
 using System.Diagnostics;
 using Npgsql;
 
@@ -44,7 +38,10 @@ namespace PtGraViewer
                 if (isWrongFolderName(pt_id))
                 { MessageBox.Show("[/pt:]" + Properties.Resources.WrongText, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
                 else
-                { tbPtID.Text = pt_id; }
+                {
+                    tbPtID.Text = pt_id;
+                    readPtData();
+                }
             }
             #endregion
 
@@ -213,6 +210,9 @@ namespace PtGraViewer
 
         #region ReadPatientData
         private void tbPtID_KeyUp(object sender, KeyEventArgs e)
+        { readPtData(); }
+
+        private void readPtData()
         {
             if (Settings.useFeDB)
             { readPtDataUsingFe(tbPtID.Text); }
