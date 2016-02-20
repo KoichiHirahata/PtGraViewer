@@ -128,22 +128,32 @@ namespace PtGraViewer
             left_load_label.Visible = true;
             this.Update();
 
-            string[] jpgFiles1;
-            string[] jpgFiles2;
+            string[] imageFiles1;
+            string[] imageFiles2;
 
             if (String.IsNullOrWhiteSpace(dateOfSearch))
             {
-                jpgFiles1 = Directory.GetFiles(ptImgDir, ptID + "_*_???.???", SearchOption.TopDirectoryOnly);//*_???.*だと-001.*と一部だぶる。何故か良く分からない。
-                jpgFiles2 = Directory.GetFiles(ptImgDir, ptID + "_*-001.???", SearchOption.AllDirectories);
+                imageFiles1 = Directory.GetFiles(ptImgDir, ptID + "_*_???.???", SearchOption.TopDirectoryOnly);//*_???.*だと-001.*と一部だぶる。何故か良く分からない。
+                imageFiles2 = Directory.GetFiles(ptImgDir, ptID + "_*-001.???", SearchOption.AllDirectories);
             }
             else //Search with date of exam
             {
-                jpgFiles1 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???.???", SearchOption.TopDirectoryOnly);
-                jpgFiles2 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???-001.???", SearchOption.AllDirectories);
+                imageFiles1 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???.???", SearchOption.TopDirectoryOnly);
+                imageFiles2 = Directory.GetFiles(ptImgDir, ptID + "_" + dateOfSearch + "_???-001.???", SearchOption.AllDirectories);
                 btShowAll.Visible = true;
             }
 
-            string[] jpgFiles = jpgFiles1.Concat(jpgFiles2).ToArray();
+            System.Collections.ArrayList imageAL = new System.Collections.ArrayList();
+            string ext1;//ファイル拡張子を格納
+
+            foreach (string s in imageFiles1.Concat(imageFiles2).ToArray())
+            {
+                ext1 = s.Substring(s.Length - 3, 3);
+                if (isSupported(ext1))
+                { imageAL.Add(s); }
+            }
+
+            string[] imageFiles = (string[])imageAL.ToArray(typeof(string));
 
             int width = 48;
             int height = 48;
@@ -151,12 +161,11 @@ namespace PtGraViewer
             LvParent.LargeImageList = ilParent;
             LvParent.Sorting = SortOrder.Descending;
 
-            string ext1;//ファイル拡張子を格納
             Image original;
             Image thumnail;
-            for (int i = 0; jpgFiles.Length > i; i++)
+            for (int i = 0; imageFiles.Length > i; i++)
             {
-                ext1 = jpgFiles[i].Substring(jpgFiles[i].Length - 3, 3);
+                ext1 = imageFiles[i].Substring(imageFiles[i].Length - 3, 3);
                 switch (ext1)
                 {
                     case "pdf":
@@ -170,28 +179,28 @@ namespace PtGraViewer
                         ilParent.Images.Add(original);
                         original.Dispose();
 
-                        LvParent.Items.Add(trimFileName(jpgFiles[i]) + "(PDF)", i);
+                        LvParent.Items.Add(trimFileName(imageFiles[i]) + "(PDF)", i);
                         break;
                     case "jpg":
                     case "JPG":
                         try
-                        { original = Bitmap.FromFile(jpgFiles[i]); }
+                        { original = Bitmap.FromFile(imageFiles[i]); }
                         catch (OutOfMemoryException)
                         {
                             MessageBox.Show(Properties.Resources.OutOfMemory, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             break;
                         }
 
-                        thumnail = createThumnail(Bitmap.FromFile(jpgFiles[i]), width, height);
+                        thumnail = createThumnail(Bitmap.FromFile(imageFiles[i]), width, height);
                         ilParent.Images.Add(thumnail);
 
                         original.Dispose();
                         thumnail.Dispose();
 
-                        LvParent.Items.Add(trimFileName(jpgFiles[i]), i);
+                        LvParent.Items.Add(trimFileName(imageFiles[i]), i);
                         break;
                 }
-                left_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + jpgFiles.Length.ToString() + "]";
+                left_load_label.Text = "Now loading... [" + (i + 1).ToString() + "/" + imageFiles.Length.ToString() + "]";
                 this.Update();
                 Application.DoEvents();
             }
@@ -204,6 +213,20 @@ namespace PtGraViewer
             {
                 LvParent.Focus();
                 LvParent.Items[0].Selected = true;
+            }
+        }
+
+        private bool isSupported(string ext)
+        {
+            switch (ext)
+            {
+                case "pdf":
+                case "PDF":
+                case "jpg":
+                case "JPG":
+                    return true;
+                default:
+                    return false;
             }
         }
         #endregion
