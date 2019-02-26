@@ -86,6 +86,7 @@
     <Compile Include="SettingForm.Designer.cs">
       <DependentUpon>SettingForm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Settings.cs" />
     <EmbeddedResource Include="JpegViewer.ja.resx">
       <DependentUpon>JpegViewer.cs</DependentUpon>
     </EmbeddedResource>
