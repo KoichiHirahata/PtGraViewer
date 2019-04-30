@@ -6,6 +6,8 @@ using System.Windows.Forms;
 using System.IO;
 using System.Diagnostics;
 using Npgsql;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
 
 namespace PtGraViewer
 {
@@ -117,7 +119,7 @@ namespace PtGraViewer
             LvItems.Items.Clear();
             ilItems.Images.Clear();
 
-            string ptImgDir = Settings.imgDir + @"\" + ptID;
+            string ptImgDir = Settings.imgDir + MakeDirPath(ptID);
             if (!Directory.Exists(ptImgDir))
             {
                 lbNoData.Visible = true;
@@ -376,11 +378,11 @@ namespace PtGraViewer
                 searchText = searchText + "*.jpg";
             }
 
-            string[] gFilesTopDir = Directory.GetFiles(Settings.imgDir + @"\" + ptID, searchText, SearchOption.TopDirectoryOnly);
+            string[] gFilesTopDir = Directory.GetFiles(Settings.imgDir + MakeDirPath(ptID), searchText, SearchOption.TopDirectoryOnly);
             string[] gFiles;
-            if (Directory.Exists(Settings.imgDir + @"\" + ptID + @"\" + searchFolderName))
+            if (Directory.Exists(Settings.imgDir + MakeDirPath(ptID) + @"\" + searchFolderName))
             {
-                string[] gFilesSubDir = Directory.GetFiles(Settings.imgDir + @"\" + ptID + @"\" + searchFolderName, searchText, SearchOption.TopDirectoryOnly);
+                string[] gFilesSubDir = Directory.GetFiles(Settings.imgDir + MakeDirPath(ptID) + @"\" + searchFolderName, searchText, SearchOption.TopDirectoryOnly);
                 gFiles = new string[gFilesTopDir.Length + gFilesSubDir.Length];
                 gFilesTopDir.CopyTo(gFiles, 0);
                 gFilesSubDir.CopyTo(gFiles, gFilesTopDir.Length);
@@ -553,11 +555,11 @@ namespace PtGraViewer
             //Search file from ID folder and ID_Date_No folder
             string searchFileName = IdDateNoExt.Substring(0, IdDateNoExt.Length - 4) + gNumber.Substring(3) + IdDateNoExt.Substring(IdDateNoExt.Length - 4);
             string searchFolderName = IdDateNoExt.Substring(0, IdDateNoExt.Length - 4);
-            string[] gFilesTopDir = Directory.GetFiles(Settings.imgDir + @"\" + ptID, searchFileName, SearchOption.TopDirectoryOnly);
+            string[] gFilesTopDir = Directory.GetFiles(Settings.imgDir + MakeDirPath(ptID), searchFileName, SearchOption.TopDirectoryOnly);
             string[] gFile;
-            if (Directory.Exists(Settings.imgDir + @"\" + ptID + @"\" + searchFolderName))
+            if (Directory.Exists(Settings.imgDir + MakeDirPath(ptID) + @"\" + searchFolderName))//todo
             {
-                string[] gFilesSubDir = Directory.GetFiles(Settings.imgDir + @"\" + ptID + @"\" + searchFolderName, searchFileName, SearchOption.TopDirectoryOnly);
+                string[] gFilesSubDir = Directory.GetFiles(Settings.imgDir + MakeDirPath(ptID) + @"\" + searchFolderName, searchFileName, SearchOption.TopDirectoryOnly);
                 gFile = new string[gFilesTopDir.Length + gFilesSubDir.Length];
                 gFilesTopDir.CopyTo(gFile, 0);
                 gFilesSubDir.CopyTo(gFile, gFilesTopDir.Length);
@@ -578,7 +580,7 @@ namespace PtGraViewer
             else
             {
                 string searchText = IdDateNoExt.Substring(0, IdDateNoExt.Length - 4) + "*" + IdDateNoExt.Substring(IdDateNoExt.Length - 4);
-                string[] FilesOfSameFolder = Directory.GetFiles(Settings.imgDir + @"\" + ptID, searchText, SearchOption.AllDirectories);
+                string[] FilesOfSameFolder = Directory.GetFiles(Settings.imgDir + MakeDirPath(ptID), searchText, SearchOption.AllDirectories);
                 JpegViewer jv = new JpegViewer(FilesOfSameFolder, gFileName);
                 jv.ShowDialog(this);
             }
@@ -656,6 +658,34 @@ namespace PtGraViewer
         {
             if (e.KeyCode == Keys.Escape)
             { clearTbPtId(); }
+        }
+
+        /// <summary>
+        /// 桁数÷4の余りの数だけIDの先頭から数字を取ってきて、その名前のフォルダを利用する（なければ作る）（例: 54321 だったら 5 ）
+        /// その下にその次の4桁の番号の名前のフォルダを利用する（なければ作る）（例: 54321 だったら 4321 ）
+        /// </summary>
+        /// <param name="_id">対象のID</param>
+        /// <returns></returns>
+        public static string MakeDirPath(string _id)
+        {
+            var digits = _id.Length;
+            if (digits < 4)
+            {
+                var ret = @"\" + digits.ToString() + @"\" + _id;
+                return ret;
+            }
+            else
+            {
+                List<string> pathList = new List<string>();
+                var temp = digits % 4;//余り
+                pathList.Add(digits.ToString());//桁数
+                if (temp != 0)
+                {
+                    pathList.Add(_id.Substring(0, temp));//余りの数だけ文字取得
+                }
+                pathList.AddRange(Regex.Split(_id.Substring(temp), @"(?<=\G.{4})(?!$)"));//4文字区切りでListにいれる
+                return @"\" + string.Join(@"\", pathList);
+            }
         }
     }
 }
