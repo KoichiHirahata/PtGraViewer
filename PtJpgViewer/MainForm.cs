@@ -330,10 +330,14 @@ namespace PtGraViewer
             }
             #endregion
 
-            if (Directory.Exists(Settings.imgDir + @"\" + tbPtID.Text))
-            { System.Diagnostics.Process.Start(Settings.imgDir + @"\" + tbPtID.Text); }
+            if (Directory.Exists(Settings.imgDir + MakeDirPath(tbPtID.Text)))
+            {
+                System.Diagnostics.Process.Start(Settings.imgDir + MakeDirPath(tbPtID.Text));
+            }
             else
-            { MessageBox.Show(Properties.Resources.FolderNotExist, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            {
+                MessageBox.Show(Properties.Resources.FolderNotExist, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
         #endregion
 
